@@ -50,11 +50,35 @@ class TextContainer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var isRTL = Directionality.of(context) == TextDirection.rtl;
     return Container(
       decoration: messageOptions.messageDecorationBuilder != null
           ? messageOptions.messageDecorationBuilder!(
               message, previousMessage, nextMessage)
-          : defaultMessageDecoration(
+          : (isRTL?
+              defaultMessageDecoration(
+                color: isOwnMessage
+                    ? messageOptions.currentUserContainerColor(context)
+                    : messageOptions.containerColor,
+                borderTopRight:
+                isPreviousSameAuthor && !isOwnMessage && !isAfterDateSeparator
+                    ? 0.0
+                    : messageOptions.borderRadius,
+                borderTopLeft:
+                isPreviousSameAuthor && isOwnMessage && !isAfterDateSeparator
+                    ? 0.0
+                    : messageOptions.borderRadius,
+                borderBottomRight:
+                !isOwnMessage && !isBeforeDateSeparator && isNextSameAuthor
+                    ? 0.0
+                    : messageOptions.borderRadius,
+                borderBottomLeft:
+                isOwnMessage && !isBeforeDateSeparator && isNextSameAuthor
+                    ? 0.0
+                    : messageOptions.borderRadius,
+              )
+              :
+          defaultMessageDecoration(
               color: isOwnMessage
                   ? messageOptions.currentUserContainerColor(context)
                   : messageOptions.containerColor,
@@ -74,7 +98,7 @@ class TextContainer extends StatelessWidget {
                   isOwnMessage && !isBeforeDateSeparator && isNextSameAuthor
                       ? 0.0
                       : messageOptions.borderRadius,
-            ),
+            )),
       padding: messageOptions.messagePadding,
       child: messageTextBuilder != null
           ? messageTextBuilder!(message, previousMessage, nextMessage)
